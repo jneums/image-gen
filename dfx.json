@@ -1,0 +1,13 @@
+{
+  "canisters": {
+    "image_gen": {
+      "main": "src/main.mo",
+      "type": "motoko"
+    }
+  },
+  "defaults": {
+    "build": {
+      "packtool": "mops sources"
+    }
+  }
+}

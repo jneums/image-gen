@@ -1,0 +1,31 @@
+name: image-gen
+namespace: io.github.jneums.image-gen
+title: Image Generation
+version: 0.1.0
+description: Generate high-quality images from text prompts using FLUX 2 Pro with automatic 2x upscaling via fal.ai.
+category: AI & Machine Learning
+mcp_path: /mcp
+repo_url: https://github.com/jneums/image-gen
+payment: null
+tags: [image-generation, ai, fal-ai, flux, upscaling, mcp]
+submission:
+  name: Image Generation
+  description: Generate high-quality images from text prompts using FLUX 2 Pro with automatic 2x upscaling via fal.ai.
+  publisher: jneums
+  category: AI & Machine Learning
+  deployment_type: global
+  repo_url: https://github.com/jneums/image-gen
+  mcp_path: /mcp
+  why_this_app: Give any agent the ability to generate studio-quality images from text prompts. Wraps fal.ai's FLUX 2 Pro model with automatic Clarity Upscaler 2x enhancement. Generation history is stored on-chain per caller.
+  key_features:
+    - Generate images from text prompts via FLUX 2 Pro
+    - Automatic 2x upscaling via Clarity Upscaler
+    - Three aspect ratios - landscape, square, portrait
+    - On-chain generation history per caller
+    - Graceful degradation if upscaling fails
+  tags: [image-generation, ai, fal-ai, flux, upscaling, mcp]
+  visuals:
+    icon_url: https://github.com/jneums/image-gen/releases/download/v0.1.0-assets/icon-image-gen.webp
+    banner_url: https://github.com/jneums/image-gen/releases/download/v0.1.0-assets/banner-image-gen.webp
+    gallery_images:
+      - https://github.com/jneums/image-gen/releases/download/v0.1.0-assets/banner-image-gen.webp
