@@ -74,7 +74,7 @@ shared ({ caller = deployer }) persistent actor class McpServer(
     { response with headers = [] };
   };
 
-  transient let authContext : ?AuthTypes.AuthContext = ?AuthState.init(
+  let authContext : ?AuthTypes.AuthContext = ?AuthState.init(
     Principal.fromActor(self),
     owner,
     issuerUrl,
@@ -84,7 +84,7 @@ shared ({ caller = deployer }) persistent actor class McpServer(
 
   // --- Beacon ---
   let beaconCanisterId = Principal.fromText("m63pw-fqaaa-aaaai-q33pa-cai");
-  transient let beaconContext : ?Beacon.BeaconContext = ?Beacon.init(
+  let beaconContext : ?Beacon.BeaconContext = ?Beacon.init(
     beaconCanisterId,
     ?(15 * 60),
   );
@@ -111,9 +111,6 @@ shared ({ caller = deployer }) persistent actor class McpServer(
     { response with headers = [] };
   };
 
-  // --- FAL_KEY management ---
-  // Set via owner-only setter after deploy.
-  // On mainnet, can also use canister env vars once PocketIC supports them.
   var falKey : ?Text = null;
 
   func getFalKey() : ?Text { falKey };
