@@ -1,10 +1,12 @@
 canisters:
   - name: image-gen
-    recipe:
-      type: "@dfinity/motoko@v4.0.0"
-      configuration:
-        main: src/main.mo
-        args: ""
+    build: |
+      mops toolchain init
+      $(mops toolchain bin moc) src/main.mo \
+        --public-metadata candid:service \
+        --actor-idl idl \
+        $(mops sources) \
+        -o "$ICP_WASM_OUTPUT_PATH"
 
 environments:
   - name: ic
