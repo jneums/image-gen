@@ -124,6 +124,47 @@ shared ({ caller = deployer }) persistent actor class McpServer(
     falKey := ?key;
   };
 
+  // --- Rate limiting ---
+  // 10 generations per 24 hours per user
+  let RATE_LIMIT : Nat = 10;
+  let RATE_WINDOW : Int = 24 * 60 * 60 * 1_000_000_000; // 24h in nanoseconds
+  // Principal -> array of generation timestamps (nanoseconds)
+  let rateLimitLog = Map.new<Principal, [Int]>();
+
+  func checkRateLimit(caller : Principal) : ToolContext.RateLimitResult {
+    let now = Time.now();
+    let windowStart = now - RATE_WINDOW;
+
+    let timestamps = switch (Map.get(rateLimitLog, Map.phash, caller)) {
+      case (?ts) { ts };
+      case (null) { return { allowed = true; remaining = RATE_LIMIT; resetsIn = 0 } };
+    };
+
+    // Filter to only timestamps within the window
+    let recent = Array.filter<Int>(timestamps, func(t) { t > windowStart });
+
+    if (recent.size() >= RATE_LIMIT) {
+      // Find when the oldest entry in window expires
+      let oldest = recent[0];
+      let resetsIn = oldest + RATE_WINDOW - now;
+      { allowed = false; remaining = 0; resetsIn = resetsIn };
+    } else {
+      { allowed = true; remaining = RATE_LIMIT - recent.size(); resetsIn = 0 };
+    };
+  };
+
+  func recordGeneration(caller : Principal) {
+    let now = Time.now();
+    let windowStart = now - RATE_WINDOW;
+
+    let existing = switch (Map.get(rateLimitLog, Map.phash, caller)) {
+      case (?ts) { Array.filter<Int>(ts, func(t) { t > windowStart }) };
+      case (null) { [] };
+    };
+
+    Map.set(rateLimitLog, Map.phash, caller, Array.append(existing, [now]));
+  };
+
   // --- Helper: store a generation ---
   func storeGeneration(gen : ToolContext.Generation) {
     Map.set(generations, Map.thash, gen.id, gen);
@@ -179,6 +220,8 @@ shared ({ caller = deployer }) persistent actor class McpServer(
     getGeneration = getGeneration;
     listGenerations = listGenerations;
     getStats = getStats;
+    checkRateLimit = checkRateLimit;
+    recordGeneration = recordGeneration;
   };
 
   // --- Tools ---

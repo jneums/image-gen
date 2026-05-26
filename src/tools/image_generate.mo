@@ -71,6 +71,13 @@ module {
         case (null) { Principal.fromText("2vxsx-fae") };
       };
 
+      // Check rate limit (10 per 24h per user)
+      let rateLimit = context.checkRateLimit(caller);
+      if (not rateLimit.allowed) {
+        let hoursLeft = Int.abs(rateLimit.resetsIn) / (3_600_000_000_000);
+        return ToolContext.makeError("Rate limit exceeded. You can generate 10 images per 24 hours. Try again in ~" # Nat.toText(hoursLeft) # " hours.", cb);
+      };
+
       // Parse prompt
       let prompt = switch (Result.toOption(Json.getAsText(args, "prompt"))) {
         case (?p) { p };
@@ -211,6 +218,7 @@ module {
         timestamp = Time.now();
       };
       context.storeGeneration(generation);
+      context.recordGeneration(caller);
 
       // Build response
       let seedJson = switch (seed) {

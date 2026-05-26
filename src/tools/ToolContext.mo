@@ -20,6 +20,16 @@ module ToolContext {
     listGenerations : (Principal, Nat, Nat) -> [Generation];
     // Function to get stats
     getStats : () -> Stats;
+    // Rate limiting: check if caller can generate (returns remaining count or 0)
+    checkRateLimit : (Principal) -> RateLimitResult;
+    // Record a generation for rate limiting
+    recordGeneration : (Principal) -> ();
+  };
+
+  public type RateLimitResult = {
+    allowed : Bool;
+    remaining : Nat;
+    resetsIn : Int; // nanoseconds until next reset
   };
 
   public type Generation = {
