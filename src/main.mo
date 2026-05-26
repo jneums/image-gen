@@ -28,7 +28,7 @@ import ApiKey "mo:mcp-motoko-sdk/auth/ApiKey";
 
 import SrvTypes "mo:mcp-motoko-sdk/server/Types";
 
-import IC "ic:aaaaa-aa";
+import IC "mo:ic";
 
 // Import tool modules
 import ToolContext "tools/ToolContext";
@@ -68,8 +68,8 @@ shared ({ caller = deployer }) persistent actor class McpServer(
 
   public query func transformJwksResponse({
     context : Blob;
-    response : IC.http_request_result;
-  }) : async IC.http_request_result {
+    response : IC.HttpRequestResult;
+  }) : async IC.HttpRequestResult {
     ignore context;
     { response with headers = [] };
   };
@@ -105,8 +105,8 @@ shared ({ caller = deployer }) persistent actor class McpServer(
   // --- Transform function for HTTPS outcalls ---
   public query func transform({
     context : Blob;
-    response : IC.http_request_result;
-  }) : async IC.http_request_result {
+    response : IC.HttpRequestResult;
+  }) : async IC.HttpRequestResult {
     ignore context;
     { response with headers = [] };
   };

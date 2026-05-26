@@ -12,7 +12,7 @@ import Debug "mo:base/Debug";
 import Error "mo:base/Error";
 
 import ToolContext "ToolContext";
-import IC "ic:aaaaa-aa";
+import IC "mo:ic";
 
 module {
 
@@ -58,7 +58,7 @@ module {
     };
   };
 
-  public func handle(context : ToolContext.ToolContext, transform : shared query ({ context : Blob; response : IC.http_request_result }) -> async IC.http_request_result) : (
+  public func handle(context : ToolContext.ToolContext, transform : shared query ({ context : Blob; response : IC.HttpRequestResult }) -> async IC.HttpRequestResult) : (
     _args : McpTypes.JsonValue,
     _auth : ?AuthTypes.AuthInfo,
     cb : (Result.Result<McpTypes.CallToolResult, McpTypes.HandlerError>) -> ()
@@ -108,7 +108,7 @@ module {
       // Step 1: Generate image via flux-2-pro
       let genPayload = "{\"prompt\":\"" # escapeJson(prompt) # "\",\"image_size\":\"" # imageSize # "\",\"output_format\":\"jpeg\",\"safety_tolerance\":\"2\"}";
 
-      let genRequest : IC.http_request_args = {
+      let genRequest : IC.HttpRequestArgs = {
         url = "https://fal.run/fal-ai/flux-2-pro";
         max_response_bytes = ?(50_000 : Nat64);
         headers = [
@@ -125,7 +125,7 @@ module {
       };
 
       let genResponse = try {
-        await (with cycles = 300_000_000_000) IC.http_request(genRequest);
+        await (with cycles = 300_000_000_000) IC.ic.http_request(genRequest);
       } catch (e) {
         return ToolContext.makeError("Failed to call fal.ai: " # Error.message(e), cb);
       };
@@ -165,7 +165,7 @@ module {
       // Step 2: Upscale via clarity-upscaler
       let upscalePayload = "{\"image_url\":\"" # escapeJson(imageUrl) # "\",\"upscale_factor\":2,\"creativity\":0.35,\"resemblance\":0.6,\"guidance_scale\":4,\"num_inference_steps\":18}";
 
-      let upscaleRequest : IC.http_request_args = {
+      let upscaleRequest : IC.HttpRequestArgs = {
         url = "https://fal.run/fal-ai/clarity-upscaler";
         max_response_bytes = ?(50_000 : Nat64);
         headers = [
@@ -183,7 +183,7 @@ module {
 
       // Upscale is best-effort — if it fails, return original image
       let finalImageUrl = try {
-        let upscaleResponse = await (with cycles = 300_000_000_000) IC.http_request(upscaleRequest);
+        let upscaleResponse = await (with cycles = 300_000_000_000) IC.ic.http_request(upscaleRequest);
         if (upscaleResponse.status == 200) {
           switch (Text.decodeUtf8(upscaleResponse.body)) {
             case (?t) {
