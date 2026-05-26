@@ -1,6 +1,6 @@
 {
   "canisters": {
-    "image_gen": {
+    "image-gen": {
       "main": "src/main.mo",
       "type": "motoko"
     }

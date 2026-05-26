@@ -1,5 +1,5 @@
 canisters:
-  - name: image_gen
+  - name: image-gen
     recipe:
       type: "@dfinity/motoko@v4.0.0"
       configuration:
@@ -9,4 +9,4 @@ canisters:
 environments:
   - name: ic
     network: ic
-    canisters: [image_gen]
+    canisters: [image-gen]
